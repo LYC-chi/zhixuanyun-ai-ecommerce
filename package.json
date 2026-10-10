@@ -1,0 +1,13 @@
+{
+  "name": "aiecp-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "智选云 AI 电商在线售货系统 (AI-ECP) — 可运行实现，Node.js 单端口 HTTP 服务，零外部依赖。",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

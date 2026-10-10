@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#1F4E79" />
+<meta name="description" content="智选云 AI 电商在线售货系统 — 支持智能客服、智能选品、智能组货与 JSON 自定义品类的在线售货系统" />
+<title>智选云 AI 电商在线售货系统 · AI-ECP</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231F4E79'/%3E%3Ctext x='16' y='22' font-size='15' text-anchor='middle' fill='white' font-family='sans-serif'%3EAI%3C/text%3E%3C/svg%3E" />
+<link rel="stylesheet" href="/assets/app.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="brand" href="#/home">
+        <span class="brand-mark">AI</span>
+        <span class="brand-text">
+          <strong>智选云 AI 电商在线售货系统</strong>
+          <em>AI-ECP · AI E-Commerce Platform</em>
+        </span>
+      </a>
+      <button class="nav-btn" id="navBtn" aria-label="菜单"><span></span><span></span><span></span></button>
+      <nav class="mainnav" id="mainnav"></nav>
+      <div class="topbar-actions" id="topbarActions"></div>
+    </div>
+  </header>
+
+  <main id="app" class="wrap"></main>
+
+  <footer class="foot">
+    <div class="wrap foot-inner">
+      <span>智选云 AI 电商在线售货系统 · AI-ECP V1.0</span>
+      <span class="muted">Node.js 单端口服务 · JSON 自定义品类 · 智能客服 / 智能选品 / 智能组货</span>
+    </div>
+  </footer>
+
+  <!-- AI 智能助手 -->
+  <button class="ai-fab" id="aiFab" title="智能客服助手">🤖<span class="ai-fab-dot"></span></button>
+  <section class="ai-panel" id="aiPanel" aria-hidden="true">
+    <header class="ai-head">
+      <div><b>智能客服助手</b><em id="aiIntentHint">知识咨询 · 订单 · 物流 · 库存</em></div>
+      <button class="icon-btn" id="aiClose" aria-label="关闭">✕</button>
+    </header>
+    <div class="ai-body" id="aiBody"></div>
+    <div class="ai-quick" id="aiQuick"></div>
+    <form class="ai-input" id="aiForm">
+      <input id="aiInput" placeholder="请输入您的问题…" autocomplete="off" />
+      <button class="btn primary" type="submit">发送</button>
+    </form>
+  </section>
+
+  <div class="toast-wrap" id="toastWrap"></div>
+  <div class="modal-root" id="modalRoot"></div>
+
+  <script src="/assets/app.js"></script>
+</body>
+</html>
