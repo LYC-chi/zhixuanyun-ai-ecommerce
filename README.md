@@ -2,11 +2,20 @@
 
 > 依据《智选云 AI 电商在线售货系统 - 完整成果包》（需求分析报告 AIECP-SRS-001、系统设计报告 AIECP-SDD-001、22 幅 UML 图）实现的可运行电商在线销售系统。
 
-技术形态：**动态网站**（Node.js 单端口 HTTP 服务，前端 SPA + REST API + 文件型持久化），零外部依赖，可直接外网部署。
+技术形态：**双形态交付**
+
+| 形态 | 说明 | 依赖 |
+|---|---|---|
+| **动态网站** | Node.js 单端口 HTTP 服务（前端 SPA + REST API + 文件型持久化） | Node.js ≥ 18 |
+| **静态网站** | 同一套业务逻辑打包进浏览器运行（数据存 localStorage），可直接托管于 GitHub Pages | 仅需静态托管 |
+
+零外部依赖 —— 两种形态都由同一份 `src/` 领域代码驱动，行为一致。
 
 ---
 
 ## 一、运行方式
+
+### 1. 动态网站（完整功能）
 
 ```bash
 # 需 Node.js >= 18
@@ -16,6 +25,22 @@ PORT=8080 node server.js
 ```
 
 浏览器访问 `http://localhost:3000`。
+
+### 2. 静态网站（构建 + 本地预览）
+
+```bash
+node tools/build-static.js          # 产出到 docs/
+cd docs && python -m http.server 4100
+```
+
+浏览器访问 `http://localhost:4100`。将 `docs/` 目录发布到 GitHub Pages 即可获得公网地址。
+
+> 静态版原理：`static/shims/` 为 `fs` / `path` / `url` / `crypto` / `http` 提供浏览器兼容层，
+> `static/runtime.js` 用迷你 CommonJS 加载器把 `server.js` 与 `src/**` 原样载入浏览器，
+> 再由 `static/boot.js` 劫持 `fetch('/api/v1/*')` 交给内置服务处理。**业务代码零改动复用。**
+>
+> 两点差异：① 数据存 `localStorage`（换浏览器/清缓存即重置），② 口令散列用 PBKDF2-HMAC-SHA256
+> 代替 Node 的 scrypt（浏览器无同步 scrypt）。静态版定位为公开演示，生产请用动态版。
 
 ## 二、系统登录信息（默认账号）
 
@@ -91,14 +116,34 @@ aiecp-app/
 │       ├── customerService.js# 智能客服（意图/ RAG / 工具 / 转人工 / 降级）
 │       ├── selection.js      # 智能选品（多路召回 + 精排 + 过滤 + 兜底）
 │       └── bundle.js         # 智能组货（四维校验 + 组合定价）
-├── public/                   # 前端 SPA（原生物、无外部依赖）
+├── public/                   # 前端 SPA（原生实现、无外部依赖）
 │   ├── index.html
 │   └── assets/{app.css,app.js}
-└── data/db.json              # 运行时数据（首次启动自动生成）
+├── static/                   # 静态版适配层
+│   ├── prelude.js            # Buffer / process 兼容层
+│   ├── runtime.js            # 迷你 CommonJS 加载器 + 请求分发器
+│   ├── boot.js               # 浏览器侧 fetch 劫持
+│   └── shims/{fs,path,url,crypto,http}.js
+├── tools/
+│   ├── build-static.js       # 静态站构建（产出 docs/）
+│   ├── test-static.js        # 静态 bundle 逻辑自测（Node）
+│   └── test-browser.js       # 静态站 DOM 级自测（jsdom）
+├── docs/                     # 静态站产物（GitHub Pages 发布目录）
+└── data/db.json              # 动态版运行时数据（首次启动自动生成）
 ```
 
 ## 六、自测
 
 ```bash
-python test_flow.py           # 44 项端到端用例（需服务已在 3111 端口运行）
+# 动态版：端到端接口用例（需服务运行在 3111 端口）
+PORT=3111 node server.js &
+python test_flow.py
+
+# 静态版：bundle 业务逻辑（Node 上下文，27 项）
+node tools/test-static.js
+
+# 静态版：DOM 级验证（需 docs 静态服务运行在 4100 端口；依赖 jsdom）
+node tools/build-static.js
+(cd docs && python -m http.server 4100 &)
+NODE_PATH=<jsdom 所在目录>/node_modules node tools/test-browser.js
 ```
